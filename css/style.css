@@ -855,16 +855,29 @@ img { max-width: 100%; display: block; }
 }
 
 .form-message {
+  /* 粘在视口底部：表单很长时，上传/失败提示也不会被滚动带走 */
+  position: sticky;
+  bottom: 16px;
+  z-index: 8;
   margin-top: 22px;
   padding: 14px 20px;
   border: 1px solid var(--ink-10);
   border-left: 2px solid var(--ink);
   background: var(--bg);
   font-size: 14px;
+  line-height: 1.75;
+  box-shadow: 0 6px 24px rgba(28, 28, 28, 0.06);
   animation: fade-in 300ms var(--ease);
 }
 
-.form-message-error { border-left-color: var(--ink-40); }
+.form-message[hidden] { display: none; }
+
+.form-message-error {
+  border-left-color: var(--ink-40);
+  background: var(--paper);
+}
+
+.form-actions-tight { margin-top: 16px; }
 
 /* 管理页 · 密码门 */
 .auth-gate { max-width: 460px; margin: 40px auto 0; }

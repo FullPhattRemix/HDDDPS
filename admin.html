@@ -60,6 +60,12 @@
             <input type="checkbox" id="gh-remember" />
             <span>记住 Token 到本机浏览器（仅建议在私人电脑勾选）</span>
           </label>
+          <div class="form-actions form-actions-tight">
+            <button type="button" id="test-conn" class="btn btn-small">
+              <i data-lucide="plug-zap" aria-hidden="true"></i>
+              <span>测试连接 / 检查 Token</span>
+            </button>
+          </div>
         </div>
 
         <!-- 期数信息表单 -->
@@ -153,7 +159,7 @@
               </div>
             </div>
 
-            <div id="form-message" class="form-message" hidden></div>
+            <div id="form-message" class="form-message" role="status" aria-live="polite" hidden></div>
 
             <div class="form-actions">
               <button type="button" id="publish-btn" class="btn btn-solid">

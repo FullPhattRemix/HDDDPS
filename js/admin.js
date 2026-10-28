@@ -31,6 +31,7 @@
 
   var ghToken = document.getElementById("gh-token");
   var ghRemember = document.getElementById("gh-remember");
+  var testConnBtn = document.getElementById("test-conn");
 
   var form = document.getElementById("contest-form");
   var formMessage = document.getElementById("form-message");
@@ -101,6 +102,29 @@
     });
   }
 
+  /** base64 → UTF-8 字符串（GitHub 返回的内容含中文时必须这样解，不能直接用 atob） */
+  function decodeBase64Utf8(b64) {
+    var binary = atob(String(b64).replace(/\s/g, ""));
+    var bytes = new Uint8Array(binary.length);
+    for (var i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+    return new TextDecoder("utf-8").decode(bytes);
+  }
+
+  /** UTF-8 字符串 → base64 */
+  function encodeBase64Utf8(text) {
+    var bytes = new TextEncoder().encode(text);
+    var binary = "";
+    for (var i = 0; i < bytes.length; i++) binary += String.fromCharCode(bytes[i]);
+    return btoa(binary);
+  }
+
+  /** 清理 Token：去掉空格、换行、零宽字符等粘贴残留 */
+  function sanitizeToken(raw) {
+    return String(raw || "")
+      .replace(/[\s\u200b\u200c\u200d\ufeff]/g, "")
+      .trim();
+  }
+
   /** 校验单个图片文件：格式与大小；返回错误信息或 null */
   function validateImageFile(file) {
     var ext = (file.name.split(".").pop() || "").toLowerCase();
@@ -114,12 +138,11 @@
     return String(path).replace(/\.[^.\/]+$/, "." + newExt);
   }
 
-  /** 显示柔和提示条 */
+  /** 显示柔和提示条（提示条粘在视口底部，无需滚动即可看到） */
   function showMessage(text, isError) {
     formMessage.textContent = text;
     formMessage.classList.toggle("form-message-error", !!isError);
     formMessage.hidden = false;
-    formMessage.scrollIntoView({ behavior: "smooth", block: "nearest" });
   }
 
   function hideMessage() {
@@ -149,6 +172,49 @@
     btn.style.opacity = loading ? "0.6" : "";
     btn.style.pointerEvents = loading ? "none" : "";
   }
+
+  /* ---------------- 测试连接 ---------------- */
+
+  /** 检查 Token 与网络：先鉴权自身账号，再确认仓库写入权限 */
+  function testConnection() {
+    var config = getGhConfig();
+    if (!config) return;
+
+    setLoading(testConnBtn, true);
+    showMessage("正在检查 Token 与网络连通性……", false);
+
+    apiFetch(GITHUB_API + "/user", { headers: ghHeaders(config.token) })
+      .then(function (res) {
+        if (res.status === 401) throw new Error("Token 无效或已过期（401），请重新生成一个勾选了 repo 权限的 Token。");
+        if (!res.ok) throw new Error("检查账号失败（HTTP " + res.status + "）");
+        return res.json();
+      })
+      .then(function (user) {
+        return apiFetch(GITHUB_API + "/repos/" + config.owner + "/" + config.repo,
+          { headers: ghHeaders(config.token) })
+          .then(function (res) {
+            if (res.status === 404) throw new Error("找不到仓库 " + config.owner + "/" + config.repo + "，或 Token 无权访问该仓库。");
+            if (!res.ok) throw new Error("读取仓库信息失败（HTTP " + res.status + "）");
+            return res.json();
+          })
+          .then(function (repo) {
+            var canWrite = repo.permissions && repo.permissions.push;
+            showMessage(
+              "连接正常：已登录 " + user.login + "，" + config.owner + "/" + config.repo +
+              (canWrite ? " 具备写入权限，可以发布。" : " 没有写入权限——Token 需要勾选 repo（或 Contents 读写）。"),
+              !canWrite
+            );
+          });
+      })
+      .catch(function (err) {
+        showMessage("连接检查未通过：" + err.message, true);
+      })
+      .finally(function () {
+        setLoading(testConnBtn, false);
+      });
+  }
+
+  if (testConnBtn) testConnBtn.addEventListener("click", testConnection);
 
   /* ---------------- 密码门 ---------------- */
 
@@ -201,7 +267,7 @@
   /** 只在勾选「记住」时把 Token 存入本地 */
   function saveGhConfig() {
     if (ghRemember.checked) {
-      localStorage.setItem(GH_CONFIG_KEY, JSON.stringify({ token: ghToken.value.trim() }));
+      localStorage.setItem(GH_CONFIG_KEY, JSON.stringify({ token: sanitizeToken(ghToken.value) }));
     } else {
       localStorage.removeItem(GH_CONFIG_KEY);
     }
@@ -209,9 +275,17 @@
 
   /** 读取并校验 GitHub 配置，失败返回 null */
   function getGhConfig() {
-    var token = ghToken.value.trim();
+    var token = sanitizeToken(ghToken.value);
     if (!token) {
       showMessage("请先填写 GitHub Personal Access Token。", true);
+      return null;
+    }
+    if (!/^(ghp_|github_pat_|gho_|ghu_|ghs_)/.test(token)) {
+      showMessage("Token 看起来不完整：应是以 ghp_ 或 github_pat_ 开头的一长串字符，请重新复制一次（注意不要带多余空格）。", true);
+      return null;
+    }
+    if (/[^\x21-\x7e]/.test(token)) {
+      showMessage("Token 里混入了中文或全角字符，请只粘贴令牌本身。", true);
       return null;
     }
     return {
@@ -452,12 +526,39 @@
       "?ref=" + encodeURIComponent(config.branch);
   }
 
-  /** 上传 / 覆盖单个文件到仓库 */
+  /**
+   * 带自动重试的 fetch
+   * 网络被代理拦截、连接被重置时浏览器只会给出「Failed to fetch」，
+   * 这里先自动重试 2 次（间隔递增），仍失败时换成可执行的提示。
+   */
+  function apiFetch(url, options) {
+    var maxAttempts = 3;
+    function attempt(n) {
+      return fetch(url, options).catch(function () {
+        if (n < maxAttempts) {
+          return new Promise(function (resolve) {
+            setTimeout(resolve, 700 * n);
+          }).then(function () { return attempt(n + 1); });
+        }
+        throw new Error(
+          "网络连接失败（Failed to fetch）：浏览器没能连上 api.github.com。" +
+          "已自动重试 " + maxAttempts + " 次。" +
+          "请检查：① 代理/VPN 是否稳定（可先关闭再试）；" +
+          "② 浏览器新标签直接打开 https://api.github.com 能否显示内容；" +
+          "③ 网络恢复后重新点一次「上传并发布」（同一期重复发布会覆盖，不会产生脏数据）。"
+        );
+      });
+    }
+    return attempt(1);
+  }
+
+  /** 上传 / 覆盖单个文件到仓库（路径中的目录会自动创建） */
   function uploadFile(config, path, base64Content, message) {
-    return fetch(contentsUrl(config, path), { headers: ghHeaders(config.token) })
+    return apiFetch(contentsUrl(config, path), { headers: ghHeaders(config.token) })
       .then(function (res) {
         if (res.status === 404) return null; // 文件不存在，直接创建
-        if (res.status === 401) throw new Error("Token 无效或已过期（401），请检查 Personal Access Token。");
+        if (res.status === 401) throw new Error("Token 无效或已过期（401），请重新生成一个勾选了 repo 权限的 Token。");
+        if (res.status === 403) throw new Error("Token 权限不足或触发频率限制（403），请确认勾选了 repo 权限。");
         if (!res.ok) throw new Error("检查文件时出错（HTTP " + res.status + "）：" + path);
         return res.json();
       })
@@ -468,19 +569,21 @@
           branch: config.branch
         };
         if (existing && existing.sha) body.sha = existing.sha; // 覆盖已存在的文件
-        return fetch(contentsUrl(config, path).split("?")[0], {
+        return apiFetch(contentsUrl(config, path).split("?")[0], {
           method: "PUT",
           headers: ghHeaders(config.token),
           body: JSON.stringify(body)
         }).then(function (res) {
+          if (res.status === 401) throw new Error("Token 无效或已过期（401），请重新生成 Token。");
           if (!res.ok) throw new Error("上传失败（HTTP " + res.status + "）：" + path);
+          return res.json();
         });
       });
   }
 
   /** 删除仓库中的单个文件（文件不存在时静默跳过） */
   function deleteFile(config, path, message) {
-    return fetch(contentsUrl(config, path), { headers: ghHeaders(config.token) })
+    return apiFetch(contentsUrl(config, path), { headers: ghHeaders(config.token) })
       .then(function (res) {
         if (res.status === 404) return null; // 文件本就不存在
         if (!res.ok) throw new Error("读取文件信息失败（HTTP " + res.status + "）：" + path);
@@ -488,7 +591,7 @@
       })
       .then(function (existing) {
         if (!existing || !existing.sha) return null;
-        return fetch(contentsUrl(config, path).split("?")[0], {
+        return apiFetch(contentsUrl(config, path).split("?")[0], {
           method: "DELETE",
           headers: ghHeaders(config.token),
           body: JSON.stringify({
@@ -504,15 +607,15 @@
 
   /** 读取 data/contests.json 当前内容与 sha */
   function fetchContestsJson(config) {
-    return fetch(contentsUrl(config, "data/contests.json"), { headers: ghHeaders(config.token) })
+    return apiFetch(contentsUrl(config, "data/contests.json"), { headers: ghHeaders(config.token) })
       .then(function (res) {
         if (res.status === 404) return { sha: null, contests: [] };
-        if (res.status === 401) throw new Error("Token 无效或已过期（401），请检查 Personal Access Token。");
+        if (res.status === 401) throw new Error("Token 无效或已过期（401），请重新生成一个勾选了 repo 权限的 Token。");
         if (!res.ok) throw new Error("读取 contests.json 失败（HTTP " + res.status + "）");
         return res.json().then(function (data) {
           var contests = [];
           try {
-            var parsed = JSON.parse(atob(data.content.replace(/\n/g, "")));
+            var parsed = JSON.parse(decodeBase64Utf8(data.content));
             contests = Array.isArray(parsed.contests) ? parsed.contests : [];
           } catch (err) {
             throw new Error("contests.json 内容不是合法 JSON，请先在仓库中修复。");
@@ -524,8 +627,8 @@
 
   /** 提交更新后的 contests.json */
   function commitContestsJson(config, sha, contests, message) {
-    var content = btoa(unescape(encodeURIComponent(JSON.stringify({ contests: contests }, null, 2) + "\n")));
-    return fetch(GITHUB_API + "/repos/" + config.owner + "/" + config.repo +
+    var content = encodeBase64Utf8(JSON.stringify({ contests: contests }, null, 2) + "\n");
+    return apiFetch(GITHUB_API + "/repos/" + config.owner + "/" + config.repo +
       "/contents/data/contests.json", {
       method: "PUT",
       headers: ghHeaders(config.token),
@@ -536,8 +639,31 @@
         sha: sha
       })
     }).then(function (res) {
+      if (res.status === 401) throw new Error("Token 无效或已过期（401），请重新生成 Token。");
+      if (res.status === 409) throw new Error("云端数据刚刚被别处修改（409），请点「刷新列表」后再试一次。");
       if (!res.ok) throw new Error("提交 contests.json 失败（HTTP " + res.status + "）");
       return res.json();
+    });
+  }
+
+  /**
+   * 提交 JSON，并在网络中断时回读校验
+   * 代理抖动时常见：请求其实已经提交成功，但响应半路被切断 → 浏览器报 Failed to fetch。
+   * 这里在失败后等 1.5 秒重新读取仓库，若能读到本次写入的内容，就当作成功。
+   */
+  function commitWithVerify(config, sha, contests, message, contest) {
+    return commitContestsJson(config, sha, contests, message).catch(function (err) {
+      return new Promise(function (resolve) { setTimeout(resolve, 1500); })
+        .then(function () { return fetchContestsJson(config); })
+        .then(function (after) {
+          var landed = after.contests.some(function (c) {
+            return String(c.id) === String(contest.id) && c.theme === contest.theme;
+          });
+          if (landed) return { commit: null, verified: true };
+          throw err;
+        }, function () {
+          throw err;
+        });
     });
   }
 
@@ -751,17 +877,29 @@
     var built = buildContest();
     var contest = built.contest;
     var uploads = built.uploads;
+
+    // 至少要有一张作品图，否则这一期在页面上会是空的
+    if (contest.images.length === 0) {
+      showMessage("还没有选择作品图片。请至少给「第一名」上传一张作品图再发布。", true);
+      return;
+    }
+
     saveGhConfig();
 
     setLoading(publishBtn, true);
     hideMessage();
 
     // 1. 上传图片（新建 = 全部名次位；编辑 = 被替换的位）
-    showMessage(uploads.length > 0 ? "正在轻轻把图片放进仓库……" : "正在更新期数数据……", false);
+    //    GitHub Contents API 会自动创建路径中的文件夹（如 images/第3期/）
+    showMessage(uploads.length > 0
+      ? "① 正在上传作品图（0 / " + uploads.length + "）…"
+      : "① 无需上传新图，沿用原有作品图。", false);
+
     var uploadChain = Promise.resolve();
     uploads.forEach(function (item, index) {
       uploadChain = uploadChain.then(function () {
-        showMessage("正在上传图片（" + (index + 1) + " / " + uploads.length + "）：" + item.file.name, false);
+        showMessage("① 正在上传作品图（" + (index + 1) + " / " + uploads.length + "）：" +
+          item.file.name + " → " + item.path, false);
         return fileToBase64(item.file).then(function (base64) {
           return uploadFile(config, item.path, base64,
             "feat: 更新" + contest.title + "图片 " + item.path.split("/").pop());
@@ -772,7 +910,7 @@
     // 2. 合并并提交 contests.json
     uploadChain
       .then(function () {
-        showMessage("图片处理完成，正在更新期数数据……", false);
+        showMessage("② 作品图就绪，正在写入期数数据（data/contests.json）…", false);
         return fetchContestsJson(config).then(function (result) {
           var contests = result.contests;
 
@@ -793,8 +931,8 @@
           }
 
           var verb = editingId !== null ? "更新" : "添加";
-          return commitContestsJson(config, result.sha, contests,
-            "feat: " + verb + contest.title + "「" + contest.theme + "」期数数据")
+          return commitWithVerify(config, result.sha, contests,
+            "feat: " + verb + contest.title + "「" + contest.theme + "」期数数据", contest)
             .then(function (commitResult) {
               // 编辑时清理被替换后不再引用的旧图（失败不阻塞）
               if (editingId !== null && editingOriginal) {
@@ -817,9 +955,15 @@
       })
       .then(function (commitResult) {
         var commitUrl = commitResult && commitResult.commit ? commitResult.commit.html_url : "";
-        var verb = editingId !== null ? "更新" : "发布";
+        var verified = commitResult && commitResult.verified;
+        var verb = editingId !== null ? "已保存" : "已发布";
+        var folder = "images/第" + contest.id + "期/";
+
         showMessage(
-          verb + "成功！已提交到仓库，GitHub Pages 更新后即可在排名页看到。" +
+          "③ " + verb + "：" + contest.title + "已写入仓库，作品图 " + contest.images.length +
+          " 张位于 " + folder + "。" +
+          (verified ? "（网络响应中断，但已回读仓库确认写入成功）" : "") +
+          " GitHub Pages 更新后即可在「往期搭配赛」看到。" +
           (commitUrl ? " 提交记录：" + commitUrl : ""),
           false
         );
