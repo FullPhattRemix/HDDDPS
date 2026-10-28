@@ -696,13 +696,14 @@ img { max-width: 100%; display: block; }
   align-items: center;
   justify-content: center;
   padding: 24px;
+  overflow: auto;                /* 放大后可滚动平移 */
   animation: fade-in 300ms var(--ease);
 }
 
 .lightbox[hidden] { display: none; }
 
 .lightbox-mask {
-  position: absolute;
+  position: fixed;               /* 容器可滚动时仍盖满视口 */
   inset: 0;
   background: rgba(249, 248, 246, 0.94);
   backdrop-filter: blur(6px);
@@ -711,7 +712,7 @@ img { max-width: 100%; display: block; }
 .lightbox-figure {
   position: relative;
   z-index: 1;
-  margin: 0;
+  margin: auto;                  /* flex + overflow 场景的安全居中 */
   max-width: min(920px, 90vw);
   display: flex;
   flex-direction: column;
@@ -725,7 +726,19 @@ img { max-width: 100%; display: block; }
   margin: 0 auto;
   border: 1px solid var(--ink-10);
   background: var(--paper);
+  cursor: zoom-in;
 }
+
+/* 放大态：按原图尺寸展示，容器滚动 + 拖拽平移 */
+.lightbox.zoomed .lightbox-figure { max-width: none; }
+
+.lightbox.zoomed .lightbox-figure img {
+  max-width: none;
+  max-height: none;
+  cursor: grab;
+}
+
+.lightbox.zoomed .lightbox-figure img.is-panning { cursor: grabbing; }
 
 .lightbox-caption {
   text-align: center;
@@ -733,6 +746,15 @@ img { max-width: 100%; display: block; }
   font-size: 14px;
   letter-spacing: 0.1em;
   color: var(--ink-60);
+}
+
+.lightbox-hint {
+  text-align: center;
+  font-family: var(--sans);
+  font-size: 11px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--ink-40);
 }
 
 .lightbox-btn {

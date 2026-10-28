@@ -332,15 +332,93 @@
   }
 
   function showLightboxImage() {
+    resetLightboxZoom();
     lightboxImage.src = lightboxList[lightboxIndex];
     lightboxCaption.textContent = lightboxTitle + " · " + (lightboxIndex + 1) + " / " + lightboxList.length;
   }
 
   function closeLightbox() {
+    resetLightboxZoom();
     lightbox.hidden = true;
     lightboxImage.src = "";
     lightboxList = [];
     document.body.style.overflow = "";
+  }
+
+  /* ---------------- 灯箱缩放与平移 ---------------- */
+
+  var panning = false;
+  var panningMoved = false;
+  var panPointerId = null;
+  var panStartX = 0;
+  var panStartY = 0;
+  var panScrollX = 0;
+  var panScrollY = 0;
+
+  function isZoomed() {
+    return lightbox.classList.contains("zoomed");
+  }
+
+  function toggleLightboxZoom() {
+    if (isZoomed()) {
+      resetLightboxZoom();
+    } else {
+      lightbox.classList.add("zoomed");
+      lightbox.scrollLeft = 0;
+      lightbox.scrollTop = 0;
+    }
+  }
+
+  function resetLightboxZoom() {
+    lightbox.classList.remove("zoomed");
+    lightboxImage.classList.remove("is-panning");
+    panning = false;
+    panPointerId = null;
+    lightbox.scrollLeft = 0;
+    lightbox.scrollTop = 0;
+  }
+
+  function bindLightboxZoom() {
+    if (!lightbox || !lightboxImage) return;
+
+    // 点击图片：放大 / 还原（拖拽后不算点击）
+    lightboxImage.addEventListener("click", function () {
+      if (panningMoved) { panningMoved = false; return; }
+      toggleLightboxZoom();
+    });
+
+    // 放大后按住拖动平移（鼠标）
+    lightboxImage.addEventListener("mousedown", function (event) {
+      if (!isZoomed()) return;
+      event.preventDefault();
+      panning = true;
+      panningMoved = false;
+      panStartX = event.clientX;
+      panStartY = event.clientY;
+      panScrollX = lightbox.scrollLeft;
+      panScrollY = lightbox.scrollTop;
+      lightboxImage.classList.add("is-panning");
+    });
+
+    document.addEventListener("mousemove", function (event) {
+      if (!panning) return;
+      var dx = event.clientX - panStartX;
+      var dy = event.clientY - panStartY;
+      if (Math.abs(dx) > 4 || Math.abs(dy) > 4) panningMoved = true;
+      lightbox.scrollLeft = panScrollX - dx;
+      lightbox.scrollTop = panScrollY - dy;
+    });
+
+    document.addEventListener("mouseup", function () {
+      if (!panning) return;
+      panning = false;
+      lightboxImage.classList.remove("is-panning");
+    });
+
+    // 触屏：缩放状态下禁用图片自身的拖拽行为，交给浏览器原生滚动
+    lightboxImage.addEventListener("dragstart", function (event) {
+      event.preventDefault();
+    });
   }
 
   function stepLightbox(delta) {
@@ -372,6 +450,7 @@
   document.addEventListener("DOMContentLoaded", function () {
     if (!listMount) return;
     bindLightbox();
+    bindLightboxZoom();
     bindDropdown();
 
     fetch("data/contests.json")
