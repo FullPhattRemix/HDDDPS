@@ -12,8 +12,8 @@
 
   /* ---------------- 配置 ---------------- */
 
-  // 管理密码的 SHA-256 哈希（默认密码见 README，修改方式见 README）
-  var ADMIN_PASSWORD_HASH = "5b2710c66b455dab7877f27d53b1b1764c2bf91a905a3d86c232b00a76b04608";
+  // 管理密码的 SHA-256 哈希（密码本身不写入仓库；修改方式见 README）
+  var ADMIN_PASSWORD_HASH = "43d6f9b00fcbd78b802eb6e1c47254370bfc1279dd95d8b5c4053c5e42a24637";
 
   // GitHub API 基础地址与单张图片大小上限
   var GITHUB_API = "https://api.github.com";
