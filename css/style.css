@@ -23,6 +23,19 @@
 
 html { scroll-behavior: smooth; }
 
+/* 隐藏所有滚动条（滚动功能不受影响） */
+html {
+  scrollbar-width: none;          /* Firefox */
+  -ms-overflow-style: none;       /* IE/旧版 Edge */
+}
+html::-webkit-scrollbar,
+body::-webkit-scrollbar,
+*::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+  display: none;                  /* Chrome / Safari / 新版 Edge */
+}
+
 body {
   margin: 0;
   min-height: 100vh;
