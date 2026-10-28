@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>皇帝的新搭配赛 · 往期搭配赛</title>
+  <meta name="description" content="皇帝的新搭配赛往期搭配赛回顾，每期前三名作品展示" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600&family=Noto+Sans+SC:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <!-- 顶部导航栏：由 js/main.js 注入 -->
+  <div id="site-header"></div>
+
+  <main>
+    <section class="section">
+      <div class="section-head">
+        <span class="eyebrow">Archive</span>
+        <h2>往期搭配赛</h2>
+      </div>
+      <!-- 期数切换器：介绍、期数统计与翻看合并为一行 -->
+      <div class="archive-switcher">
+        <div class="select-wrap" id="archive-dropdown">
+          <button type="button" id="archive-toggle" class="dropdown-toggle"
+                  aria-haspopup="listbox" aria-expanded="false" aria-label="选择要查看的期数">
+            <span class="dropdown-value">正在加载……</span>
+            <i data-lucide="chevron-down" class="select-chevron" aria-hidden="true"></i>
+          </button>
+          <ul id="archive-menu" class="dropdown-menu" role="listbox" aria-label="期数列表" hidden></ul>
+        </div>
+        <div class="archive-step">
+          <p id="archive-count" class="archive-count"></p>
+          <button type="button" id="prev-contest" class="page-btn page-step" aria-label="上一期（更早一期）" title="上一期">
+            <i data-lucide="chevron-left" aria-hidden="true"></i>
+            <span>上一期</span>
+          </button>
+          <button type="button" id="next-contest" class="page-btn page-step" aria-label="下一期（更新一期）" title="下一期">
+            <span>下一期</span>
+            <i data-lucide="chevron-right" aria-hidden="true"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- 当前这一期的内容 -->
+      <div id="rankings-list" class="rankings-grid">
+        <p class="loading-hint">正在加载往期档案……</p>
+      </div>
+    </section>
+  </main>
+
+  <!-- 灯箱 -->
+  <div id="lightbox" class="lightbox" hidden>
+    <div class="lightbox-mask" data-lightbox-close></div>
+    <button type="button" class="lightbox-btn lightbox-close" data-lightbox-close aria-label="关闭预览">
+      <i data-lucide="x" aria-hidden="true"></i>
+    </button>
+    <button type="button" class="lightbox-btn lightbox-prev" data-lightbox-prev aria-label="上一张">
+      <i data-lucide="chevron-left" aria-hidden="true"></i>
+    </button>
+    <figure class="lightbox-figure">
+      <img id="lightbox-image" src="" alt="排名图预览" />
+      <figcaption id="lightbox-caption" class="lightbox-caption"></figcaption>
+    </figure>
+    <button type="button" class="lightbox-btn lightbox-next" data-lightbox-next aria-label="下一张">
+      <i data-lucide="chevron-right" aria-hidden="true"></i>
+    </button>
+  </div>
+
+  <!-- 页脚：由 js/main.js 注入 -->
+  <div id="site-footer"></div>
+
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script src="js/main.js"></script>
+  <script src="js/rankings.js"></script>
+</body>
+</html>

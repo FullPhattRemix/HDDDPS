@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>皇帝的新搭配赛 · 添加期数</title>
+  <meta name="description" content="为皇帝的新搭配赛添加新一期数据（管理员专用）" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600&family=Noto+Sans+SC:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body class="admin-body">
+  <!-- 顶部导航栏：由 js/main.js 注入 -->
+  <div id="site-header"></div>
+
+  <main>
+    <section class="section">
+      <div class="section-head">
+        <span class="eyebrow">Admin</span>
+        <h2>添加期数</h2>
+        <hr class="rule" />
+      </div>
+      <p class="page-intro">管理员专用：填写表单、选择图片，一键上传到 GitHub 仓库发布新一期。前三名依次为前 3 张图片。</p>
+
+      <!-- 管理员密码门 -->
+      <div id="auth-gate" class="auth-gate" hidden>
+        <div class="form-panel auth-panel">
+          <div class="group-icon" aria-hidden="true"><i data-lucide="lock"></i></div>
+          <h2 class="panel-title">管理员入口</h2>
+          <p class="field-hint">此页面仅限管理人员使用，请输入管理密码继续。</p>
+          <form id="auth-form">
+            <div class="form-item">
+              <label for="auth-password">管理密码</label>
+              <input type="password" id="auth-password" autocomplete="current-password" placeholder="请输入管理密码" />
+              <p class="form-error" id="auth-error" hidden></p>
+            </div>
+            <div class="form-actions">
+              <button type="submit" class="btn btn-solid">
+                <i data-lucide="unlock" aria-hidden="true"></i>
+                <span>进入管理页</span>
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <!-- 管理内容（通过密码后显示） -->
+      <div id="admin-content" hidden>
+        <!-- GitHub 仓库配置 -->
+        <div class="form-panel">
+          <h2 class="panel-title">GitHub 仓库配置</h2>
+          <p class="field-hint">需要提供一个具有仓库写入权限的 Personal Access Token，仅在上传时使用。</p>
+          <div class="form-grid">
+            <div class="form-item">
+              <label for="gh-owner">用户名 / 组织名</label>
+              <input type="text" id="gh-owner" placeholder="例如：your-github-name" />
+            </div>
+            <div class="form-item">
+              <label for="gh-repo">仓库名</label>
+              <input type="text" id="gh-repo" placeholder="例如：emperor-contest" />
+            </div>
+          </div>
+          <div class="form-grid">
+            <div class="form-item">
+              <label for="gh-branch">分支</label>
+              <input type="text" id="gh-branch" placeholder="默认：main" />
+            </div>
+            <div class="form-item">
+              <label for="gh-token">Personal Access Token <span class="required-mark">*</span></label>
+              <input type="password" id="gh-token" placeholder="ghp_ 开头的令牌" autocomplete="off" />
+            </div>
+          </div>
+          <label class="remember-row" for="gh-remember">
+            <input type="checkbox" id="gh-remember" />
+            <span>记住配置到本机浏览器（含 Token，仅建议在私人电脑勾选）</span>
+          </label>
+        </div>
+
+        <!-- 期数信息表单 -->
+        <div class="form-panel">
+          <!-- 编辑模式状态条 -->
+          <div id="edit-banner" class="edit-banner" hidden>
+            <span id="edit-banner-text"></span>
+            <button type="button" id="cancel-edit" class="btn btn-small btn-quiet">
+              <i data-lucide="x" aria-hidden="true"></i>
+              <span>取消编辑</span>
+            </button>
+          </div>
+          <form id="contest-form" novalidate>
+            <div class="form-grid">
+              <div class="form-item">
+                <label for="field-id">期数编号 <span class="required-mark">*</span></label>
+                <input type="number" id="field-id" name="id" min="1" step="1" placeholder="例如：3" />
+                <p class="form-hint-note">期数标题将自动生成为「第3期」，无需单独填写。</p>
+                <p class="form-error" data-error-for="field-id" hidden></p>
+              </div>
+              <div class="form-item">
+                <label for="field-theme">主题名称 <span class="required-mark">*</span></label>
+                <input type="text" id="field-theme" name="theme" placeholder="例如：星夜舞会" />
+                <p class="form-error" data-error-for="field-theme" hidden></p>
+              </div>
+            </div>
+
+            <div class="form-item">
+              <label for="field-date">日期</label>
+              <input type="date" id="field-date" name="date" />
+              <p class="form-error" data-error-for="field-date" hidden></p>
+            </div>
+
+            <div class="form-item">
+              <label for="field-description">描述</label>
+              <textarea id="field-description" name="description" rows="3" placeholder="用几句话介绍本期主题与氛围吧……"></textarea>
+              <p class="form-error" data-error-for="field-description" hidden></p>
+            </div>
+
+            <!-- 前三名昵称 -->
+            <div class="form-item">
+              <label>前三名昵称（可选，与下方前 3 张图片一一对应）</label>
+              <div class="form-grid top3-names-grid">
+                <div class="form-item">
+                  <label for="winner-1" class="sub-label">第一名</label>
+                  <input type="text" id="winner-1" placeholder="冠军作品昵称" />
+                </div>
+                <div class="form-item">
+                  <label for="winner-2" class="sub-label">第二名</label>
+                  <input type="text" id="winner-2" placeholder="亚军作品昵称" />
+                </div>
+                <div class="form-item">
+                  <label for="winner-3" class="sub-label">第三名</label>
+                  <input type="text" id="winner-3" placeholder="季军作品昵称" />
+                </div>
+              </div>
+            </div>
+
+            <!-- 前三名图片：三个独立名次位 -->
+            <div class="form-item">
+              <label>前三名作品（分开上传，便于区分名次）</label>
+              <p class="field-hint">每期只展示前三名：每个名次位上传一张作品，上传后可移除重传。建议三个位子都上传。</p>
+              <div class="rank-slots">
+                <div class="rank-slot">
+                  <span class="rank-slot-label">第一名</span>
+                  <div class="upload-area upload-area-slot" id="upload-rank-1" data-rank="1">
+                    <i data-lucide="trophy" aria-hidden="true"></i>
+                    <p>点击选择第一名作品</p>
+                  </div>
+                  <input type="file" id="file-rank-1" accept="image/*" hidden />
+                  <div class="slot-preview" id="preview-rank-1"></div>
+                </div>
+                <div class="rank-slot">
+                  <span class="rank-slot-label">第二名</span>
+                  <div class="upload-area upload-area-slot" id="upload-rank-2" data-rank="2">
+                    <i data-lucide="medal" aria-hidden="true"></i>
+                    <p>点击选择第二名作品</p>
+                  </div>
+                  <input type="file" id="file-rank-2" accept="image/*" hidden />
+                  <div class="slot-preview" id="preview-rank-2"></div>
+                </div>
+                <div class="rank-slot">
+                  <span class="rank-slot-label">第三名</span>
+                  <div class="upload-area upload-area-slot" id="upload-rank-3" data-rank="3">
+                    <i data-lucide="award" aria-hidden="true"></i>
+                    <p>点击选择第三名作品</p>
+                  </div>
+                  <input type="file" id="file-rank-3" accept="image/*" hidden />
+                  <div class="slot-preview" id="preview-rank-3"></div>
+                </div>
+              </div>
+            </div>
+
+            <div id="form-message" class="form-message" hidden></div>
+
+            <div class="form-actions">
+              <button type="button" id="publish-btn" class="btn btn-solid">
+                <i data-lucide="upload-cloud" aria-hidden="true"></i>
+                <span>上传并发布</span>
+              </button>
+              <button type="button" id="preview-btn" class="btn">
+                <i data-lucide="eye" aria-hidden="true"></i>
+                <span>仅生成 JSON</span>
+              </button>
+              <button type="reset" class="btn btn-quiet">
+                <i data-lucide="rotate-ccw" aria-hidden="true"></i>
+                <span>重置表单</span>
+              </button>
+            </div>
+          </form>
+        </div>
+
+        <!-- 往期管理：编辑 / 删除 -->
+        <div class="form-panel manage-panel">
+          <h2 class="panel-title">往期管理</h2>
+          <p class="field-hint">数据来自 GitHub 仓库中的 data/contests.json。请先在上方填写仓库配置，再点击「刷新列表」。</p>
+          <div class="manage-actions">
+            <button type="button" id="refresh-manage" class="btn btn-small">
+              <i data-lucide="refresh-cw" aria-hidden="true"></i>
+              <span>刷新列表</span>
+            </button>
+          </div>
+          <div id="manage-list" class="manage-list">
+            <p class="empty-hint">尚未加载，点击「刷新列表」查看往期。</p>
+          </div>
+        </div>
+
+        <!-- 生成结果 / 上传进度 -->
+        <div id="output-section" class="output-section" hidden>
+          <div class="form-panel output-panel">
+            <h2 class="panel-title" id="output-title">生成结果</h2>
+            <p class="field-hint" id="output-hint">请将下方 JSON 中新增的一条 contest 数据，合并进 data/contests.json 的 contests 数组。</p>
+            <pre id="output-json" class="output-json" tabindex="0"></pre>
+            <div class="form-actions">
+              <button type="button" id="copy-json" class="btn btn-solid">
+                <i data-lucide="copy" aria-hidden="true"></i>
+                <span>复制 JSON</span>
+              </button>
+            </div>
+          </div>
+
+          <div class="form-panel guide-panel">
+            <h2 class="panel-title">接下来怎么做</h2>
+            <ol class="guide-steps">
+              <li>在本地仓库的 images/ 目录下，新建以本期命名的文件夹，例如 images/第3期/。</li>
+              <li>把排名图片放入该文件夹，图片文件名需与上方填写的路径一致。</li>
+              <li>打开 data/contests.json，把复制好的这期数据加入 contests 数组。</li>
+              <li>提交并推送到 GitHub：git add . 然后 git commit 与 git push。</li>
+              <li>稍等片刻，GitHub Pages 会自动更新，新一期就会出现在排名页啦。</li>
+            </ol>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- 页脚：由 js/main.js 注入 -->
+  <div id="site-footer"></div>
+
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script src="js/main.js"></script>
+  <script src="js/admin.js"></script>
+</body>
+</html>

@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>皇帝的新搭配赛 · 首页</title>
+  <meta name="description" content="皇帝的新搭配赛 —— 奇迹暖暖玩家组织的搭配赛活动官网" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600&family=Noto+Sans+SC:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <!-- 顶部导航栏：由 js/main.js 注入 -->
+  <div id="site-header"></div>
+
+  <main>
+    <!-- Hero 区域 -->
+    <section class="hero">
+      <div class="hero-eyebrow">
+        <span class="eyebrow">奇迹暖暖玩家 · 搭配赛组织</span>
+      </div>
+      <h1 class="hero-title">皇帝的新搭配赛</h1>
+      <p class="hero-subtitle">在衣橱与灵感的交界处，每一期主题都是一次纸上策展。我们收录玩家们最好的搭配作品，并以杂志的方式呈现。</p>
+      <div class="hero-actions">
+        <a href="rankings.html" class="btn btn-solid">
+          <i data-lucide="book-open" aria-hidden="true"></i>
+          <span>浏览往期搭配赛</span>
+        </a>
+        <a href="#review-group" class="btn">
+          <i data-lucide="users" aria-hidden="true"></i>
+          <span>加入审核群</span>
+        </a>
+      </div>
+      <div class="hero-meta">
+        <div class="meta-item">
+          <span class="eyebrow">Contests</span>
+          <span class="meta-value" id="hero-contest-count">—</span>
+        </div>
+        <div class="meta-item">
+          <span class="eyebrow">Latest</span>
+          <span class="meta-value" id="hero-latest-theme">—</span>
+        </div>
+        <div class="meta-item">
+          <span class="eyebrow">Review Group</span>
+          <span class="meta-value">1127110890</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- 审核群信息展示区 -->
+    <section id="review-group" class="section">
+      <div class="section-head">
+        <span class="eyebrow">Review Group</span>
+        <h2>审核群</h2>
+        <hr class="rule" />
+      </div>
+      <div class="group-grid">
+        <div class="group-copy">
+          <h3>皇帝的搭配赛审核群</h3>
+          <p class="group-desc">提交审核作品、等待审核结果都在审核群；通过后管理员会拉你进主群。</p>
+          <ol class="group-steps">
+            <li>
+              <span class="step-no">01</span>
+              <span class="step-text">加入审核群，提交审核作品</span>
+            </li>
+            <li>
+              <span class="step-no">02</span>
+              <span class="step-text">等待审核，通过后收到通知</span>
+            </li>
+          </ol>
+        </div>
+        <div class="group-card">
+          <span class="eyebrow">Review Group QQ</span>
+          <div class="group-number-row">
+            <span class="group-number" id="group-number">1127110890</span>
+            <button type="button" class="btn btn-copy btn-quiet" data-copy-target="group-number" aria-label="复制审核群群号">
+              <i data-lucide="copy" aria-hidden="true"></i>
+            </button>
+          </div>
+          <div class="group-actions">
+            <a href="https://qm.qq.com/q/X5hGzkSn2S" target="_blank" rel="noopener noreferrer" class="btn btn-solid">
+              <i data-lucide="external-link" aria-hidden="true"></i>
+              <span>一键跳转加审核群</span>
+            </a>
+          </div>
+          <p class="group-note">点击按钮跳转加群，也可复制群号在 QQ 中搜索。</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 最新一期简介卡片 -->
+    <section class="section">
+      <div class="section-head">
+        <span class="eyebrow">Latest Issue</span>
+        <h2>最新一期</h2>
+        <hr class="rule" />
+      </div>
+      <div id="latest-contest" class="latest-grid">
+        <p class="loading-hint">正在加载最新一期……</p>
+      </div>
+    </section>
+  </main>
+
+  <!-- 页脚：由 js/main.js 注入 -->
+  <div id="site-footer"></div>
+
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script src="js/main.js"></script>
+  <script src="js/home.js"></script>
+</body>
+</html>
