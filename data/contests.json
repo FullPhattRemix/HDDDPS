@@ -1,38 +1,3 @@
 {
-  "contests": [
-    {
-      "id": 2,
-      "title": "第2期",
-      "theme": "星夜舞会",
-      "date": "2026-09-20",
-      "description": "月光洒落舞池，繁星点缀裙摆。本期主题围绕「星夜舞会」展开，选手们用礼服、星光饰品与梦幻妆容，演绎属于自己的午夜童话。",
-      "top3": [
-        { "rank": 1, "name": "Moonlit Waltz", "image": "images/第2期/rank1.jpg" },
-        { "rank": 2, "name": "Stardust Echo", "image": "images/第2期/rank2.jpg" },
-        { "rank": 3, "name": "Velvet Midnight", "image": "images/第2期/rank3.jpg" }
-      ],
-      "images": [
-        "images/第2期/rank1.jpg",
-        "images/第2期/rank2.jpg",
-        "images/第2期/rank3.jpg"
-      ]
-    },
-    {
-      "id": 1,
-      "title": "第1期",
-      "theme": "春日花园",
-      "date": "2026-06-15",
-      "description": "樱花纷飞的季节里，第一期搭配赛以「春日花园」为主题。参赛选手以花冠、纱裙与柔色系搭配，呈现出满园春色的浪漫景象。",
-      "top3": [
-        { "rank": 1, "name": "Blossom Crown", "image": "images/第1期/rank1.jpg" },
-        { "rank": 2, "name": "Petal Whisper", "image": "images/第1期/rank2.jpg" },
-        { "rank": 3, "name": "Spring Sonnet", "image": "images/第1期/rank3.jpg" }
-      ],
-      "images": [
-        "images/第1期/rank1.jpg",
-        "images/第1期/rank2.jpg",
-        "images/第1期/rank3.jpg"
-      ]
-    }
-  ]
+  "contests": []
 }
