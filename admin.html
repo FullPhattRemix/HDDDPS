@@ -47,33 +47,18 @@
 
       <!-- 管理内容（通过密码后显示） -->
       <div id="admin-content" hidden>
-        <!-- GitHub 仓库配置 -->
+        <!-- GitHub 授权 -->
         <div class="form-panel">
-          <h2 class="panel-title">GitHub 仓库配置</h2>
-          <p class="field-hint">需要提供一个具有仓库写入权限的 Personal Access Token，仅在上传时使用。</p>
-          <div class="form-grid">
-            <div class="form-item">
-              <label for="gh-owner">用户名 / 组织名</label>
-              <input type="text" id="gh-owner" placeholder="例如：your-github-name" />
-            </div>
-            <div class="form-item">
-              <label for="gh-repo">仓库名</label>
-              <input type="text" id="gh-repo" placeholder="例如：emperor-contest" />
-            </div>
-          </div>
-          <div class="form-grid">
-            <div class="form-item">
-              <label for="gh-branch">分支</label>
-              <input type="text" id="gh-branch" placeholder="默认：main" />
-            </div>
-            <div class="form-item">
-              <label for="gh-token">Personal Access Token <span class="required-mark">*</span></label>
-              <input type="password" id="gh-token" placeholder="ghp_ 开头的令牌" autocomplete="off" />
-            </div>
+          <h2 class="panel-title">GitHub 授权</h2>
+          <p class="field-hint">仓库固定为 <strong id="repo-label">FullPhattRemix/HDDDPS</strong> · 分支 main，只需填写 Token。</p>
+          <div class="form-item">
+            <label for="gh-token">Personal Access Token <span class="required-mark">*</span></label>
+            <input type="password" id="gh-token" placeholder="ghp_ 开头的令牌" autocomplete="off" />
+            <p class="field-hint">在 GitHub → Settings → Developer settings → Personal access tokens (classic) 生成，勾选 <code>repo</code> 权限；Token 只在你浏览器中使用。</p>
           </div>
           <label class="remember-row" for="gh-remember">
             <input type="checkbox" id="gh-remember" />
-            <span>记住配置到本机浏览器（含 Token，仅建议在私人电脑勾选）</span>
+            <span>记住 Token 到本机浏览器（仅建议在私人电脑勾选）</span>
           </label>
         </div>
 
@@ -190,7 +175,7 @@
         <!-- 往期管理：编辑 / 删除 -->
         <div class="form-panel manage-panel">
           <h2 class="panel-title">往期管理</h2>
-          <p class="field-hint">数据来自 GitHub 仓库中的 data/contests.json。请先在上方填写仓库配置，再点击「刷新列表」。</p>
+          <p class="field-hint">数据来自 GitHub 仓库中的 data/contests.json。请先在上方填写 Token，再点击「刷新列表」。</p>
           <div class="manage-actions">
             <button type="button" id="refresh-manage" class="btn btn-small">
               <i data-lucide="refresh-cw" aria-hidden="true"></i>

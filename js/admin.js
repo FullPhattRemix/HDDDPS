@@ -1,7 +1,7 @@
 /* ============================================================
    admin.js · 添加期数页逻辑（管理员）
    - 密码门：SHA-256 哈希校验（防普通访客，非绝对安全）
-   - GitHub 仓库配置：Token / 仓库信息，可保存到 localStorage
+   - GitHub 授权：仓库固定为 FullPhattRemix/HDDDPS，仅填 Token，可保存到 localStorage
    - 新增期数：前三名各一个独立名次位，GitHub Contents API 直传
    - 往期管理：编辑（改信息 / 替换名次图）、删除（清数据 + 删图）
    - 降级：仅生成 JSON（不上传，手动操作）
@@ -29,9 +29,6 @@
   var authForm = document.getElementById("auth-form");
   var authError = document.getElementById("auth-error");
 
-  var ghOwner = document.getElementById("gh-owner");
-  var ghRepo = document.getElementById("gh-repo");
-  var ghBranch = document.getElementById("gh-branch");
   var ghToken = document.getElementById("gh-token");
   var ghRemember = document.getElementById("gh-remember");
 
@@ -189,25 +186,22 @@
 
   var GH_CONFIG_KEY = "emperorGhConfig";
 
+  /** 站点对应的仓库（固定值，无需用户填写） */
+  var GH_REPOSITORY = { owner: "FullPhattRemix", repo: "HDDDPS", branch: "main" };
+
+  /** 读取本地保存的 Token */
   function loadGhConfig() {
     try {
       var saved = JSON.parse(localStorage.getItem(GH_CONFIG_KEY) || "{}");
-      ghOwner.value = saved.owner || "";
-      ghRepo.value = saved.repo || "";
-      ghBranch.value = saved.branch || "main";
       ghToken.value = saved.token || "";
       ghRemember.checked = !!saved.token;
     } catch (err) { /* 忽略损坏的本地数据 */ }
   }
 
+  /** 只在勾选「记住」时把 Token 存入本地 */
   function saveGhConfig() {
     if (ghRemember.checked) {
-      localStorage.setItem(GH_CONFIG_KEY, JSON.stringify({
-        owner: ghOwner.value.trim(),
-        repo: ghRepo.value.trim(),
-        branch: ghBranch.value.trim() || "main",
-        token: ghToken.value.trim()
-      }));
+      localStorage.setItem(GH_CONFIG_KEY, JSON.stringify({ token: ghToken.value.trim() }));
     } else {
       localStorage.removeItem(GH_CONFIG_KEY);
     }
@@ -215,15 +209,17 @@
 
   /** 读取并校验 GitHub 配置，失败返回 null */
   function getGhConfig() {
-    var owner = ghOwner.value.trim();
-    var repo = ghRepo.value.trim();
-    var branch = ghBranch.value.trim() || "main";
     var token = ghToken.value.trim();
-    if (!owner || !repo || !token) {
-      showMessage("请先填写完整的仓库配置（用户名、仓库名、Token）。", true);
+    if (!token) {
+      showMessage("请先填写 GitHub Personal Access Token。", true);
       return null;
     }
-    return { owner: owner, repo: repo, branch: branch, token: token };
+    return {
+      owner: GH_REPOSITORY.owner,
+      repo: GH_REPOSITORY.repo,
+      branch: GH_REPOSITORY.branch,
+      token: token
+    };
   }
 
   /* ---------------- 前三名独立名次位 ---------------- */
@@ -674,7 +670,7 @@
   function loadManage() {
     var config = getGhConfig();
     if (!config) {
-      manageList.innerHTML = '<p class="empty-hint">请先在上方填写仓库配置（用户名、仓库名、Token）。</p>';
+      manageList.innerHTML = '<p class="empty-hint">请先在上方填写 GitHub Token。</p>';
       return;
     }
     manageList.innerHTML = '<p class="empty-hint">正在从仓库读取往期数据……</p>';

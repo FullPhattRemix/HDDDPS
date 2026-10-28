@@ -36,7 +36,7 @@ emperor-contest/
 
 1. 打开 GitHub → 右上角头像 → **Settings → Developer settings → Personal access tokens → Tokens (classic)**。
 2. 点 **Generate new token (classic)**，勾选 `repo` 权限（需要仓库写入）。
-3. 生成后复制 Token（`ghp_` 开头），填入管理页的「GitHub 仓库配置」。
+3. 生成后复制 Token（`ghp_` 开头），填入管理页的「GitHub 授权」（仓库已固定，只需填 Token）。
 
 Token 仅在你的浏览器中使用：勾选「记住配置」会存入本机 localStorage（仅建议在私人电脑勾选），不勾选则只在本页面会话内有效，刷新后需重新填写。**不要把 Token 提交到仓库或发给任何人。**
 
