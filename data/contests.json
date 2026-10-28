@@ -3,9 +3,9 @@
     {
       "id": 1,
       "title": "第1期",
-      "theme": "大家都讨厌你艳压群芳脱颖而出的样子",
-      "date": "2026-10-18",
-      "description": "本次搭配赛允许p图",
+      "theme": "大家都讨厌你艳压全场脱颖而出的样子",
+      "date": "2026-10-23",
+      "description": "艳压不是喧嚣，是沉默里最响的那一声。脱颖不是挤兑谁，是把自己穿成答案。他们讨厌的样子，恰好是我最自在的样子——这一场，我只负责夺目，不负责解释。",
       "images": [
         "images/第1期/rank1.jpeg",
         "images/第1期/rank2.jpeg",
@@ -15,17 +15,17 @@
         {
           "rank": 1,
           "image": "images/第1期/rank1.jpeg",
-          "name": "作者：小黑"
+          "name": "小黑"
         },
         {
           "rank": 2,
           "image": "images/第1期/rank2.jpeg",
-          "name": "作者：yakitarri"
+          "name": "yakitorri"
         },
         {
           "rank": 3,
           "image": "images/第1期/rank3.jpeg",
-          "name": "作者：捉星星"
+          "name": "捉星星"
         }
       ]
     }
