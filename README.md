@@ -119,7 +119,7 @@ npx serve .
 
 - 群号等常量集中写在 `js/main.js` 顶部的 `GROUP_QQ`，修改一处全站生效。
 - 管理密码哈希与图片大小上限等配置在 `js/admin.js` 顶部。
-- 图标统一使用 Lucide Icons（CDN 引入），新增图标时在 HTML/模板字符串中写 `<i data-lucide="icon-name">`，并确保渲染后调用了 `lucide.createIcons()`。
+- 图标统一使用 Lucide Icons（本地自托管于 `js/vendor/lucide.min.js`，v0.469.0，不依赖外部 CDN，国内访问不受 unpkg 阻塞影响），新增图标时在 HTML/模板字符串中写 `<i data-lucide="icon-name">`，并确保渲染后调用了 `lucide.createIcons()`。
 - 视觉风格为编辑杂志风（Editorial）：衬线标题（Noto Serif SC）+ 无衬线正文、暖米色 #F9F8F6 背景、柔和黑 #1C1C1C 文字、透明度构建灰度、细线分隔与优雅留白、纯单色体系（无彩色强调、无阴影、无粗边框），样式集中在 `css/style.css`。
 - 站点不使用任何 emoji，所有图形均为 Lucide 图标。
 
