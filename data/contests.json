@@ -1,3 +1,33 @@
 {
-  "contests": []
+  "contests": [
+    {
+      "id": 1,
+      "title": "第1期",
+      "theme": "大家都讨厌你艳压群芳脱颖而出的样子",
+      "date": "2026-10-18",
+      "description": "本次搭配赛允许p图",
+      "images": [
+        "images/第1期/rank1.jpeg",
+        "images/第1期/rank2.jpeg",
+        "images/第1期/rank3.jpeg"
+      ],
+      "top3": [
+        {
+          "rank": 1,
+          "image": "images/第1期/rank1.jpeg",
+          "name": "作者：小黑"
+        },
+        {
+          "rank": 2,
+          "image": "images/第1期/rank2.jpeg",
+          "name": "作者：yakitarri"
+        },
+        {
+          "rank": 3,
+          "image": "images/第1期/rank3.jpeg",
+          "name": "作者：捉星星"
+        }
+      ]
+    }
+  ]
 }
