@@ -373,6 +373,7 @@
     lightbox.classList.remove("zoomed");
     lightboxImage.classList.remove("is-panning");
     panning = false;
+    panningMoved = false;
     panPointerId = null;
     lightbox.scrollLeft = 0;
     lightbox.scrollTop = 0;
