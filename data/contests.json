@@ -36,14 +36,14 @@
       "date": "2026-10-29",
       "description": "本期搭配赛不允许p图",
       "images": [
-        "images/第2期/rank1.jpg",
+        "images/第2期/rank1.jpeg",
         "images/第2期/rank2.jpeg",
         "images/第2期/rank3.png"
       ],
       "top3": [
         {
           "rank": 1,
-          "image": "images/第2期/rank1.jpg",
+          "image": "images/第2期/rank1.jpeg",
           "name": "化鹤"
         },
         {
@@ -54,7 +54,7 @@
         {
           "rank": 3,
           "image": "images/第2期/rank3.png",
-          "name": "捉星星（需旋转屏幕观看）"
+          "name": "捉星星-作品可以旋转屏幕观看"
         }
       ]
     }
