@@ -28,6 +28,35 @@
           "name": "捉星星"
         }
       ]
+    },
+    {
+      "id": 2,
+      "title": "第2期",
+      "theme": "天地宏大，神性悲悯",
+      "date": "2026-10-29",
+      "description": "本期搭配赛不允许p图",
+      "images": [
+        "images/第2期/rank1.jpg",
+        "images/第2期/rank2.jpeg",
+        "images/第2期/rank3.png"
+      ],
+      "top3": [
+        {
+          "rank": 1,
+          "image": "images/第2期/rank1.jpg",
+          "name": "化鹤"
+        },
+        {
+          "rank": 2,
+          "image": "images/第2期/rank2.jpeg",
+          "name": "鸭鸭"
+        },
+        {
+          "rank": 3,
+          "image": "images/第2期/rank3.png",
+          "name": "捉星星（需旋转屏幕观看）"
+        }
+      ]
     }
   ]
 }
