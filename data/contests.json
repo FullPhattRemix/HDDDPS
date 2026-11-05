@@ -57,6 +57,35 @@
           "name": "捉星星-作品可以旋转屏幕观看"
         }
       ]
+    },
+    {
+      "id": 3,
+      "title": "第3期",
+      "theme": "万圣节来啦",
+      "date": "2026-11-05",
+      "description": "本期搭配赛主题：万圣节来啦，允许p图",
+      "images": [
+        "images/第3期/rank1.png",
+        "images/第3期/rank2.png",
+        "images/第3期/rank3.png"
+      ],
+      "top3": [
+        {
+          "rank": 1,
+          "image": "images/第3期/rank1.png",
+          "name": "yakitorri"
+        },
+        {
+          "rank": 2,
+          "image": "images/第3期/rank2.png",
+          "name": "森森"
+        },
+        {
+          "rank": 3,
+          "image": "images/第3期/rank3.png",
+          "name": "PotatoHead"
+        }
+      ]
     }
   ]
 }
