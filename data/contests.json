@@ -86,6 +86,35 @@
           "name": "PotatoHead"
         }
       ]
+    },
+    {
+      "id": 4,
+      "title": "第4期",
+      "theme": "无特资黑白背景の搭配大作战",
+      "date": "2026-11-15",
+      "description": "本期搭配赛禁止使用特殊姿势，且需要使用纯黑/白背景",
+      "images": [
+        "images/第4期/rank1.jpeg",
+        "images/第4期/rank2.jpeg",
+        "images/第4期/rank3.png"
+      ],
+      "top3": [
+        {
+          "rank": 1,
+          "image": "images/第4期/rank1.jpeg",
+          "name": "i2Ce_7"
+        },
+        {
+          "rank": 2,
+          "image": "images/第4期/rank2.jpeg",
+          "name": "清九"
+        },
+        {
+          "rank": 3,
+          "image": "images/第4期/rank3.png",
+          "name": "子晰"
+        }
+      ]
     }
   ]
 }
