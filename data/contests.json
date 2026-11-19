@@ -115,6 +115,35 @@
           "name": "子晰"
         }
       ]
+    },
+    {
+      "id": 5,
+      "title": "第5期",
+      "theme": "双生并蒂",
+      "date": "2026-11-19",
+      "description": "本期搭配赛主题：双生并蒂",
+      "images": [
+        "images/第5期/rank1.png",
+        "images/第5期/rank2.png",
+        "images/第5期/rank3.png"
+      ],
+      "top3": [
+        {
+          "rank": 1,
+          "image": "images/第5期/rank1.png",
+          "name": "yakitorri"
+        },
+        {
+          "rank": 2,
+          "image": "images/第5期/rank2.png",
+          "name": "酱"
+        },
+        {
+          "rank": 3,
+          "image": "images/第5期/rank3.png",
+          "name": "甘蔗"
+        }
+      ]
     }
   ]
 }
